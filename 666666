@@ -1,0 +1,206 @@
+local Translations = {
+   --["这里填要代替的英文"] = "这里填中文",
+    ["Win Instantly"] = "立即获胜",
+    ["Help Player"] = "帮助玩家",
+    ["remove InjuredWalking"] = "移除受伤行走状态",
+    ["Troll Player"] = "捉弄玩家",
+    ["Ink Game | BorenHub"] = "墨水游戏3333汉化",
+    ["Green Light Red Light"] = "绿灯红灯",
+    ["Hide and Seek"] = "捉迷藏",
+    ["Kill Aura (Hiders)"] = "击杀光环（躲藏者",
+    ["Kill spikes (Hiders"] = "击杀尖刺（躲藏者",
+    ["Infinite Stamina"] = "无限耐力",
+    ["Remove Spikes"] = "移除尖刺",
+    ["Teleport to Hider"] = "传送到躲藏者位置",
+    ["Teleport to Safe Zone"] = "传送到安全区",
+    ["Toggle"] = "切换",
+    ["Lock"] = "锁定",
+    ["Main"] = "主菜单",
+    ["Combat"] = "战斗",
+    ["Misc"] = "杂项",
+    ["UI Settings"] = "用户界面设置",
+    ["Dalgona"] = "抠糖饼",
+    ["Complete Dalgona"] = "完成抠糖饼",
+    ["Anti crack"] = "防碎裂",
+    ["Fix camera"] = "修复相机",
+    ["Free Lighter"] = "免费打火机",
+    ["Teleport keys"] = "传送按键",
+    ["Esp seeker/hiders"] = "显示搜寻者/躲藏者（透视功能）",
+    ["Teleport 100 Blocks Up"] = "向上传送100格",
+    ["Teleport 40 Blocks Down"] = "向下传送40格",
+    ["Jump Rope"] = "跳绳",
+    ["Delete Rope"] = "删除跳绳",
+    ["Teleport to End"] = "传送到终点",
+    ["Tug of War"] = "拔河",
+    ["Instant Win"] = "即时胜利",
+    ["AUTO PULL"] = "自动拉拽",
+    ["Auto Perfect Pull"] = "自动完美拉拽",
+    ["Mingle"] = "交际",
+    ["Auto QTE(dont work)"] = "自动快速反应事件（无法工作）",
+    ["Auto Choke v2"] = "自动窒息 v2",
+    ["Brimg person"] = "带来人员",
+    ["Glass Bridge"] = "玻璃桥",
+    ["Highlight Glass"] = "高亮玻璃",
+    ["Rebel"] = "反叛者",
+    ["Auto Camlock Guard"] = "自动锁定摄像头守卫",
+    ["Bring Guard"] = "带来守卫",
+    ["Infinite Ammo"] = "无限弹药",
+    ["Sky Squid"] = "天空鱿鱼",
+    ["Create Medium Platform"] = "创建中型平台",
+    ["Remove Medium Platform"] = "移除中型平台",
+    ["Final"] = "最终阶段",
+    ["Kill Aura"] = "击杀光环",
+    ["Touch Fling(risk ban)"] = "触碰弹飞（有封号风险）",
+    ["https://discord.gg/sNZKcfZ6"] = "3333汉化",
+    ["Attachment"] = "附件",
+    ["Aura"] = "光环",
+    ["Camlock Player / TP"] = "锁定玩家视角/传送",
+    ["Auto Weapon"] = "自动武器",
+    ["Anti Ragdoll + No Stun"] = "防 ragdoll 状态 + 无眩晕",
+    ["Player Attach"] = "玩家附着",
+    ["Attach Range"] = "附着范围",
+    ["Movement Type"] = "移动类型",
+    ["Tween"] = "缓动",
+    ["Tween Duration"] = "缓动持续时间",
+    ["Stay Behind Target"] = "留在目标后方",
+    ["Behind Distance"] = "后方距离",
+    ["General"] = "常规",
+    ["Auto Skip Dialogues"] = "自动跳过对话",
+    ["Auto Vote"] = "自动投票",
+    ["Vote Options"] = "投票选项",
+    ["KeepPlaying"] = "继续游戏",
+    ["Free Phantomstep"] = "免费幻影步",
+    ["Free ParkourArtist"] = "免费跑酷达人",
+    ["Free Dash"] = "免费冲刺",
+    ["Anti Fling"] = "防弹飞",
+    ["Movement"] = "移动",
+    ["Infinite Jump"] = "无限跳跃",
+    ["Walk Speed"] = "行走速度",
+    ["Automation"] = "自动化",
+    ["Auto Collect Flashbang"] = "自动收集闪光弹",
+    ["Auto Collect Bandage"] = "自动收集绷带",
+    ["Fun"] = "趣味",
+    ["Free VIP (Visual)"] = "免费VIP（视觉效果）",
+    ["Set Player Tag (0-999)"] = "设置玩家标签（0-999）",
+    ["Enter number..."] = "输入数字...",
+    ["Anti Banana"] = "防香蕉",
+    ["Anti Stun"] = "防眩晕",
+    ["Anti Ragdoll"] = "防 ragdoll 状态",
+    ["Auto reach"] = "自动延伸",
+    ["No Cooldown Proximity"] = "无冷却接近",
+    ["Anti Lag"] = "防延迟",
+    ["Info & Credits"] = "懒得汉化了",
+}
+
+local function translateText(text)
+    if not text or type(text) ~= "string" then return text end
+    
+    if Translations[text] then
+        return Translations[text]
+    end
+    
+    for en, cn in pairs(Translations) do
+        if text:find(en) then
+            return text:gsub(en, cn)
+        end
+    end
+    
+    return text
+end
+
+local function setupTranslationEngine()
+    local success, err = pcall(function()
+        local oldIndex = getrawmetatable(game).__newindex
+        setreadonly(getrawmetatable(game), false)
+        
+        getrawmetatable(game).__newindex = newcclosure(function(t, k, v)
+            if (t:IsA("TextLabel") or t:IsA("TextButton") or t:IsA("TextBox")) and k == "Text" then
+                v = translateText(tostring(v))
+            end
+            return oldIndex(t, k, v)
+        end)
+        
+        setreadonly(getrawmetatable(game), true)
+    end)
+    
+    if not success then
+        warn("元表劫持失败:", err)
+       
+        local translated = {}
+        local function scanAndTranslate()
+            for _, gui in ipairs(game:GetService("CoreGui"):GetDescendants()) do
+                if (gui:IsA("TextLabel") or gui:IsA("TextButton") or gui:IsA("TextBox")) and not translated[gui] then
+                    pcall(function()
+                        local text = gui.Text
+                        if text and text ~= "" then
+                            local translatedText = translateText(text)
+                            if translatedText ~= text then
+                                gui.Text = translatedText
+                                translated[gui] = true
+                            end
+                        end
+                    end)
+                end
+            end
+            
+            local player = game:GetService("Players").LocalPlayer
+            if player and player:FindFirstChild("PlayerGui") then
+                for _, gui in ipairs(player.PlayerGui:GetDescendants()) do
+                    if (gui:IsA("TextLabel") or gui:IsA("TextButton") or gui:IsA("TextBox")) and not translated[gui] then
+                        pcall(function()
+                            local text = gui.Text
+                            if text and text ~= "" then
+                                local translatedText = translateText(text)
+                                if translatedText ~= text then
+                                    gui.Text = translatedText
+                                    translated[gui] = true
+                                end
+                            end
+                        end)
+                    end
+                end
+            end
+        end
+        
+        local function setupDescendantListener(parent)
+            parent.DescendantAdded:Connect(function(descendant)
+                if descendant:IsA("TextLabel") or descendant:IsA("TextButton") or descendant:IsA("TextBox") then
+                    task.wait(0.1)
+                    pcall(function()
+                        local text = descendant.Text
+                        if text and text ~= "" then
+                            local translatedText = translateText(text)
+                            if translatedText ~= text then
+                                descendant.Text = translatedText
+                            end
+                        end
+                    end)
+                end
+            end)
+        end
+        
+        pcall(setupDescendantListener, game:GetService("CoreGui"))
+        local player = game:GetService("Players").LocalPlayer
+        if player and player:FindFirstChild("PlayerGui") then
+            pcall(setupDescendantListener, player.PlayerGui)
+        end
+        
+        while true do
+            scanAndTranslate()
+            task.wait(3)
+        end
+    end
+end
+
+task.wait(2)
+
+setupTranslationEngine()
+
+local success, err = pcall(function()
+--这下面填加载外部脚本
+loadstring(game:HttpGet("https://raw.githubusercontent.com/eikikrkr-ux/bypasok/refs/heads/main/ok"))()
+end)
+
+if not success then
+    warn("加载失败:", err)
+end
