@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>脚本中心 - 完整版</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* 整体布局 */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* 左侧导航栏 */
+    .sidebar {
+      width: 220px;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-right: 1px solid #333;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar .header {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .sidebar .header small {
+      display: block;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    .nav-items {
+      list-style: none;
+    }
+    .nav-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.3s ease;
+    }
+    .nav-item i {
+      margin-right: 10px;
+    }
+    .nav-item:hover,
+    .nav-item.active {
+      background-color: #2a2a2a;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      background: #4CAF50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    .user-name {
+      font-size: 14px;
+    }
+
+    /* 右侧内容区 */
+    .content {
+      flex: 1;
+      margin-left: 220px;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .card {
+      background-color: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      background-color: #333;
+    }
+    .card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .card p {
+      font-size: 14px;
+      color: #cccccc;
+      margin-bottom: 12px;
+    }
+    .copy-btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    .copy-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* 卡密输入弹窗 */
+    .key-modal {
+      width: 400px;
+      max-width: 90%;
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 24px;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      border: 1px solid #444;
+      margin: 20px auto;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .modal-header i {
+      width: 32px;
+      height: 32px;
+      margin-right: 12px;
+      background: #4CAF50;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .modal-header h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .tip-text {
+      color: #ccc;
+      margin-bottom: 24px;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+    .key-input {
+      display: flex;
+      align-items: center;
+      border: 1px solid #555;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 24px;
+      background: #1e1e1e;
+      transition: border-color 0.3s;
+    }
+    .key-input:focus-within {
+      border-color: #4CAF50;
+    }
+    .key-input i {
+      color: #ccc;
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+    .key-input input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #fff;
+      outline: none;
+      font-size: 1rem;
+    }
+    .key-input input::placeholder {
+      color: #999;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .btn {
+      flex: 1;
+      padding: 12px 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    .btn-exit {
+      background: #444;
+      color: #ccc;
+    }
+    .btn-exit:hover {
+      background: #555;
+    }
+    .btn-submit {
+      background: #4CAF50;
+      color: white;
+    }
+    .btn-submit:hover {
+      background: #45a049;
+      transform: translateY(-1px);
+    }
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+      }
+      .content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- 左侧导航栏 -->
+    <nav class="sidebar">
+      <div class="header">
+        脚本中心<br />
+        <small>作者: 孤月、星新</small>
+      </div>
+      <ul class="nav-items">
+        <li class="nav-item active">
+          <i class="fas fa-rocket"></i> 公告
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> 死铁轨
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> 最强战场
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> 杀手vs警长
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> 99夜
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> Blox（海贼王）
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> 蜂群
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> 被遗弃
+        </li>
+        <li class="nav-item">
+          <i class="fas fa-rocket"></i> 伐木大亨
+        </li>
+      </ul>
+      <div class="user-info">
+        <div class="avatar">N</div>
+        <div class="user-name">Nbnb_754</div>
+      </div>
+    </nav>
+
+    <!-- 右侧内容区 -->
+    <main class="content">
+      <!-- 卡密输入区域 -->
+      <div class="key-modal">
+        <div class="modal-header">
+          <i class="fas fa-check-circle"></i>
+          <h2>脚本中心</h2>
+        </div>
+
+        <p class="tip-text">QQ进群问人卡密 1055767342</p>
+
+        <div class="key-input">
+          <i class="fas fa-key"></i>
+          <input type="text" placeholder="请输入卡密" id="keyInput" />
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-exit">
+            <i class="fas fa-sign-out-alt"></i> 退出
+          </button>
+          <button class="btn btn-submit">
+            <i class="fas fa-check"></i> 提交
+          </button>
+        </div>
+      </div>
+
+      <!-- 脚本卡片区域 -->
+      <div class="card">
+        <h3>点击复制脚本群QQ号（群满人看群介绍进）</h3>
+        <p>不定时更新缝合</p>
+        <button class="copy-btn" data-clipboard-text="1055767342">复制QQ号</button>
+      </div>
+
+      <div class="card">
+        <h3>点击复制群主快手号</h3>
+        <p>我们会努力打造一个好用的缝合</p>
+        <button class="copy-btn" data-clipboard-text="快手号示例">复制快手号</button>
+      </div>
+
+      <div class="card">
+        <h3>此脚本全英文</h3>
+        <p>有空会汉化的</p>
+      </div>
+
+      <div class="card">
+        <h3>有好用脚本愿意分享可以加群主</h3>
+        <p>点击复制群主QQ号</p>
+        <button class="copy-btn" data-clipboard-text="群主QQ号示例">复制群主QQ号</button>
+      </div>
+
+      <div class="card">
+        <h3>孤月做了一个ROBLOX服务器（可以进群支持）</h3>
+        <p>点击复制群QQ号</p>
+        <button class="copy-btn" data-clipboard-text="ROBLOX群号示例">复制群QQ号</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- 引入 Clipboard.js -->
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+  <script>
+    // 复制功能
+    const clipboard = new ClipboardJS('.copy-btn');
+    clipboard.on('success', function(e) {
+      alert('复制成功！');
+      e.clearSelection();
+    });
+    clipboard.on('error', function(e) {
+      alert('复制失败，请手动复制！');
+    });
+
+    // 卡密输入功能
+    const exitBtn = document.querySelector('.btn-exit');
+    const submitBtn = document.querySelector('.btn-submit');
+    const keyInput = document.getElementById('keyInput');
+    const keyModal = document.querySelector('.key-modal');
+
+    exitBtn.addEventListener('click', () => {
+      if(confirm('确定要退出吗？')) {
+        keyModal.style.display = 'none';
+        const message = document.createElement('div');
+        message.style.cssText = 'text-align:center;color:#ccc;margin-top:20px;';
+        message.textContent = '已退出卡密输入';
+        document.querySelector('.content').appendChild(message);
+        
+        setTimeout(() => {
+          message.remove();
+          keyModal.style.display = 'block';
+        }, 2000);
+      }
+    });
+
+    submitBtn.addEventListener('click', () => {
+      const key = keyInput.value.trim();
+      if (key) {
+        alert(`卡密提交成功：${key}`);
+        keyInput.value = '';
+      } else {
+        alert('请输入有效的卡密');
+        keyInput.focus();
+      }
+    });
+
+    keyInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        submitBtn.click();
+      }
+    });
+
+    // 导航项点击事件
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+          nav.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // 这里可以添加切换不同脚本分类的逻辑
+        alert(`切换到：${this.textContent.trim()}`);
+      });
+    });
+  </script>
+</body>
+</html>
